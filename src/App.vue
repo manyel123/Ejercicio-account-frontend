@@ -7,6 +7,8 @@
                     Inicio</button>
                 <button v-if="is_auth"   v-on:click="loadAccount">
                     Cuenta</button>
+                <button v-if="is_auth"   v-on:click="loadTransaction">
+                    Transferencias</button>
                 <button v-if="is_auth"   v-on:click="logOut">
                     Cerrar Sesión</button>
                 <button v-if="!is_auth"  v-on:click="loadLogIn">
@@ -21,9 +23,10 @@
             <router-view
                 v-on:completedLogIn="completedLogIn"
                 v-on:completedSignUp="completedSignUp"
-                v-on:logOut="logOut"
+                v-on:transactionCompleted="transactionCompleted"
+                v-on:logOut="logOut"  
             >
-            </router-view>
+            </router-view><!--cada_v-on_en_este_router_view_es_un_$emit_que_está_esperando_desde_los_componentes_hijos-->
         </div>
 
         <div class="footer">
@@ -48,11 +51,12 @@ export default {
     methods: {
         /*métodos javaS del componente*/
         verifyAuth: function () {
-            this.is_auth = localStorage.getItem("isAuth") || false;
+            this.is_auth = localStorage.getItem("isAuth") || false;/*Si_isAuth_no_está_en_localStorage_lo_deja_siempre_false */
 
             if (this.is_auth == false) {
-                this.$router.push({ name: "logIn" });
-            } else this.$router.push({ name: "home" });
+                this.$router.push({ name: "logIn" });/*Si_es_false_redirecciona_al_componente_login */
+            } else 
+                this.$router.push({ name: "home" });/*Si_es_true_carga_el_componente_home */
         },
 
         loadLogIn: function () {
@@ -63,18 +67,23 @@ export default {
             this.$router.push({ name: "signUp" });
         },
 
-        completedLogIn: function (data) {
-            localStorage.setItem("isAuth", true);
-            localStorage.setItem("username", data.username);
+        completedLogIn: function (data) {/*en_data_recibe_el_objeto_dataLogin_desde_el_componente_login */
+            localStorage.setItem("isAuth", true);/*guarda_isAuth_en_el_localStorage_como_true_ahora_indica_que_el_usuario_está_autenticado */
+            localStorage.setItem("username", data.username);/*guarda_username_y_los_token_en_el_localStorage_con_los_valores_en_dataLogin*/
             localStorage.setItem("token_access", data.token_access);
             localStorage.setItem("token_refresh", data.token_refresh);
             alert("Autenticación Exitosa");
-            this.verifyAuth();
+            this.verifyAuth();/*verifica_que_el_usuario_se_encuentre_autenticado_y_redirecciona_al_home_o_al_login_según_sea_el_caso*/
         },
 
         completedSignUp: function (data) {
             alert("Registro Exitoso");
-            this.completedLogIn(data);
+            this.completedLogIn(data);/*Reutiliza_la_función_completedLogIn_después_de_un_nuevo_registro_de_usuario */
+        },
+
+        transactionCompleted: function(data){/*alert_lanza_el_aviso_con_los_datos_que_llegan_del_proceso_de_transacción */
+            alert(`Transacción exitosa.\n\nCantidad:${data.amount}\nFecha:${data.registerDate}\nNota:${data.note}`);
+            this.$router.push({ name: "account"});
         },
 
         loadHome: function () {
@@ -83,6 +92,10 @@ export default {
 
         loadAccount: function () {
             this.$router.push({ name: "account" });
+        },
+
+        loadTransaction: function () {
+            this.$router.push({ name: "transactionCreate"});
         },
 
         logOut: function () {
@@ -125,7 +138,7 @@ body {
 
 .header nav {
     height: 100%;
-    width: 20%;
+    width: 30%;
     display: flex;
     justify-content: space-around;
     align-items: center;
