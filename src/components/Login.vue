@@ -2,6 +2,7 @@
     <div class="logInUser">
         <div class="containerLogInUser">
             <h2>Iniciar Sesión</h2>
+            <!--Manejador_del_evento_submit_del_botón_del_formulario-->
             <form v-on:submit.prevent="processLoginUser">
                 <input
                     type="text"
@@ -52,9 +53,10 @@ export default {
                     token_access : result.data.access /*De_la_respuesta_del_login_trae_el_token_de_acceso_y_lo_guarda_en_este_atributo */,
                     token_refresh: result.data.refresh /*De_la_respuesta_del_login_trae_el_token_de_refresh_y_lo_guarda_en_este_atributo */,
                 };
-                /*$emit_envia_al_componente_padre_App_la_confirmación_del_login_con_completedLogIn */
+                /*emit_es_el_proceso_para_enviar_datos_del_hijo_al_padre*/
+                /*$emit_envia_al_componente_padre_App_la_confirmación_del_login_con_completedLogIn_y_dataLogin_los_datos_producto_del_proceso */
                 this.$emit("completedLogIn", dataLogin); /*dataLogin_es_la_data_con_la_cual_el_completedLogIn_se_logró*/
-            }) /*Ahora_el_componente_padre_App_tendrá_la_información_del_login */
+            }) /*Ahora_el_componente_padre_App_tendrá_la_información_del_login_con_dataLogin */
             .catch((error) => {/*En_caso_de_que_el_user_o_password_sean_incorrectos */
                 if (error.response.status == "401")/*El_backend_retorna_el_error_401 */
                     alert("Las credenciales son incorrectas"); /*Se_emite_esta_alerta_al_usuario */
@@ -93,6 +95,7 @@ export default {
 .logInUser form {
     width: 70%;
 }
+
 .logInUser input {
     height: 40px;
     width: 100%;
@@ -101,6 +104,7 @@ export default {
     margin: 5px 0;
     border: 1px solid #af486a;
 }
+
 .logInUser button {
     width: 100%;
     height: 40px;
@@ -111,6 +115,7 @@ export default {
     padding: 10px 25px;
     margin: 5px 0;
 }
+
 .logInUser button:hover {
     color: #e5e7e9;
     background: crimson;
